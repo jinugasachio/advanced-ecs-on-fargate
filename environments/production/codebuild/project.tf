@@ -17,20 +17,12 @@ resource "aws_codebuild_project" "continuous_apply" {
     image           = "hashicorp/terraform:0.12.5" # build projectで使用したいdocker image
     privileged_mode = false                        # dockerコンテナを特権モードにするか否か
   }
+}
 
-
-  provisioner "local-exec" { # https://www.terraform.io/docs/language/resources/provisioners/local-exec.html
-    command = <<-EOT
-      aws codebuild import-source-credentials \
-        --server-type GITHUB \
-        --auth-type PERSONAL_ACCESS_TOKEN \
-        --token $GITHUB_TOKEN
-    EOT
-
-    environment = {
-      GITHUB_TOKEN = data.aws_ssm_parameter.github_token.value
-    }
-  }
+resource "aws_codebuild_source_credential" "example" {
+  auth_type   = "PERSONAL_ACCESS_TOKEN"
+  server_type = "GITHUB"
+  token       = data.aws_ssm_parameter.github_token.value
 }
 
 data "aws_ssm_parameter" "github_token" {
