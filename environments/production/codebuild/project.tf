@@ -4,7 +4,7 @@ resource "aws_codebuild_project" "continuous_apply" {
 
   source {
     type     = "GITHUB" # ビルドするコードがあるリポジトリの種類
-    location = "https://github.com/jinugasachio/architectures-terraform/tree/main/advanced_ecs_on_fargate" # GITHUB or S3の場合は指定する
+    location = "https://github.com/jinugasachio/advanced-ecs-on-fargate.git" # GITHUB or S3の場合は指定する
   }
 
   artifacts {
@@ -18,7 +18,7 @@ resource "aws_codebuild_project" "continuous_apply" {
     privileged_mode = false                        # dockerコンテナを特権モードにするか否か
   }
 
-  
+
   provisioner "local-exec" { # https://www.terraform.io/docs/language/resources/provisioners/local-exec.html
     command = <<-EOT
       aws codebuild import-source-credentials \
