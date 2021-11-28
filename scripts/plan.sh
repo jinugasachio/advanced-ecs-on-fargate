@@ -6,7 +6,7 @@ CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only  | xargs -I{} d
 for dir in $CHANGED_DIRS
 do
   cd $dir
-  if [ -e ${CONFIG_FILE} ]; then # provider.yfが存在するならば
+  if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
     terraform init -input=false -no-color
     terraform plan -input=false -no-color | tfnotify --config ${CODEBUILD_SRC_DIR}/tfnotify.yml plan --message "$dir"
   fi
