@@ -5,7 +5,7 @@ CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only  | xargs -I{} d
 
 for dir in $CHANGED_DIRS
 do
-  cd $dir
+  cd ${CODEBUILD_SRC_DIR}/$dir
   if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
     terraform --version
     terraform init -input=false -no-color
