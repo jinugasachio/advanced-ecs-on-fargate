@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 CONFIG_FILE="provider.tf"
 CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only  | xargs -I{} dirname {} | awk '!a[$0]++{print}') # 差分のあるファイルのディレクトリを一意に取得する
 
 for dir in $CHANGED_DIRS
 do
-  cd $dir
+  cd ${CODEBUILD_SRC_DIR}/$dir
   if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
     terraform init -input=false -no-color
     terraform plan -input=false -no-color | tfnotify --config ${CODEBUILD_SRC_DIR}/tfnotify.yml plan --message "$dir"
