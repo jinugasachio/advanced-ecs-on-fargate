@@ -14,7 +14,7 @@ resource "aws_codebuild_project" "continuous_apply" {
   environment {
     type            = "LINUX_CONTAINER"
     compute_type    = "BUILD_GENERAL1_SMALL"
-    image           = "hashicorp/terraform:0.12.5" # build projectで使用したいdocker image
+    image           = "hashicorp/terraform:1.0.11" # build projectで使用したいdocker image
     privileged_mode = false                        # dockerコンテナを特権モードにするか否か
   }
 }
