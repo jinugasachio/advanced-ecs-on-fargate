@@ -5,6 +5,7 @@ CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only  | xargs -I{} d
 
 for dir in $CHANGED_DIRS
 do
+  pwd
   cd $dir
   if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
     terraform init -input=false -no-color
