@@ -8,6 +8,7 @@ do
   cd $dir
   if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
     pwd
+    terraform --version
     terraform init -input=false -no-color
     terraform plan -input=false -no-color #| tfnotify --config ${CODEBUILD_SRC_DIR}/tfnotify.yml plan --message "$dir"
   fi
