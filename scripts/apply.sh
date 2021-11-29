@@ -1,10 +1,19 @@
 #!/bin/sh
 
+CONFIG_FILE="provider.tf"
+CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only  | xargs -I{} dirname {} | awk '!a[$0]++{print}') # 差分のあるファイルのディレクトリを一意に取得する
 MESSAGE=$(git log ${CODEBUILD_SOURCE_VERSION} -1 --pretty=format:"%s")
 CODEBUILD_SOURCE_VERSION=$(echo ${MESSAGE} | cut -f4 -d' ' | sed 's/#/pr\//')
-terraform init -input=false -no-color
-terraform apply -input=false -no-color -auto-approve | \
-tfnotify --config ${CODEBUILD_SRC_DIR}/tfnotify.yaml apply # --message "$(date)"
+
+for dir in $CHANGED_DIRS
+do
+  cd ${CODEBUILD_SRC_DIR}/$dir
+  if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
+    terraform init -input=false -no-color
+    terraform apply -input=false -no-color -auto-approve | \
+    tfnotify --config ${CODEBUILD_SRC_DIR}/tfnotify.yaml apply --message "$dir"
+  fi
+done
 
 # ---------------------------------------------------------------------------------
 # -input=false  実行時の入力を抑制し、未定義の変数がある場合はエラーにする
