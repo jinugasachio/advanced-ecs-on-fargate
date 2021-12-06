@@ -9,4 +9,5 @@ jobs:
     steps:
       - run: echo "🎉"
       - run: echo "github head_ref is ${{ github.head_ref }} !"
+      - run: echo "github ref_name is  ${{ github.ref_name }} !"
       - run: echo "github ref is  ${{ github.ref }} !"
