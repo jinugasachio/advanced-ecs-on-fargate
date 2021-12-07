@@ -2,7 +2,7 @@ name: Renovate
 
 on: pull_request
 
-permissions:
+permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
   id-token: write
   contents: read
 
