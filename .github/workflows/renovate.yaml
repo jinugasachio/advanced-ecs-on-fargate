@@ -2,12 +2,50 @@ name: Renovate
 
 on: pull_request
 
-jobs:
-  test:
+permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+  id-token: write
+  contents: read
+
+jobs:  
+  update-terraform:
+    name: Terraform version update
     runs-on: ubuntu-latest
     if: startsWith(github.head_ref, 'renovate-terraform')
-    steps:
-      - run: echo "🎉"
-      - run: echo "github head_ref is ${{ github.head_ref }} !"
-      - run: echo "github ref_name is  ${{ github.ref_name }} !"
-      - run: echo "github ref is  ${{ github.ref }} !"
+    steps: 
+      - name: Checkout repository
+        uses: actions/checkout@v2 # https://github.com/actions/checkout デフォルトで pull/xxx/merge ブランチにチェックアウトする
+
+      - name: Detect terraform version
+        run: printf "TF_VERSION=%s" $(cat .terraform-version) >> $GITHUB_ENV
+      
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Install tfnotify
+        run: ./scripts/install.sh
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
+        with:
+          role-to-assume: arn:aws:iam::167855287371:role/yukio-ugajin-test-for-github-actions
+          role-session-name: GitHubActions
+          aws-region: us-west-2 # オレゴン
+
+      - name: Confirm AWS credentials
+        run: aws sts get-caller-identity
+
+      # この後は.terraform.lock.hclがあるディレクトリ分だけinit & plan をする
+      
+
+      # PRのブランチにチェックアウト
+      # - name: Checkout
+      #   uses: actions/checkout@v2
+      #   with:
+      #     ref: ${{github.event.pull_request.head.ref}}
+      # - name: confirm
+      #   run: |
+      #     git status
+      #     git branch
+  # update-terraform-provider
