@@ -2,6 +2,10 @@ name: Renovate
 
 on: pull_request
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:  
   update-terraform:
     name: Terraform version update
