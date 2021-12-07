@@ -1,0 +1,20 @@
+name: Assume Role
+on: push
+
+env:
+  AWS_ROLE_ARN: arn:aws:iam::167855287371:role/yukio-ugajin-test-for-github-actions
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          role-session-name: GitHubActions
+          aws-region: us-west-2 # オレゴン
+      - run: aws sts get-caller-identity
