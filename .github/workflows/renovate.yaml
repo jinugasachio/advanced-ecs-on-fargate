@@ -2,13 +2,33 @@ name: Renovate
 
 on: pull_request
 
-jobs:
-  renovate-test:
+jobs:  
+  update-terraform:
+    name: Terraform version update
     runs-on: ubuntu-latest
     if: startsWith(github.head_ref, 'renovate-terraform')
-    steps:
-      - run: echo "🎉"
-      - run: echo "github head_ref is ${{ github.head_ref }} !"
-      - run: echo "github ref_name is  ${{ github.ref_name }} !"
-      - run: echo "github ref is  ${{ github.ref }} !"
-  
+    steps: 
+      - name: Checkout repository
+        uses: actions/checkout@v2 # https://github.com/actions/checkout デフォルトで pull/xxx/merge ブランチにチェックアウトする
+
+      - name: Detect terraform version
+        run: |
+          printf "TF_VERSION=%s" $(cat .terraform-version) >> $GITHUB_ENV
+      
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Install tfnotify
+        run: ./scripts/install.sh
+      # PRのブランチにチェックアウト
+      # - name: Checkout
+      #   uses: actions/checkout@v2
+      #   with:
+      #     ref: ${{github.event.pull_request.head.ref}}
+      # - name: confirm
+      #   run: |
+      #     git status
+      #     git branch
+  # update-terraform-provider
