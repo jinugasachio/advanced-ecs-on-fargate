@@ -4,8 +4,8 @@
   ],
   "packageRules": [
     {
-        "matchPackageNames": ["aws"],
-        "branchPrefix": "renovate-terraform-provider/"
+      "matchPackageNames": ["aws"],
+      "branchPrefix": "renovate-terraform-provider/"
     },
     {
       "matchPackageNames": ["terraform"],
