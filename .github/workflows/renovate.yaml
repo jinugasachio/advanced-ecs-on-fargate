@@ -36,6 +36,11 @@ jobs:
       - name: Confirm AWS credentials
         run: aws sts get-caller-identity
 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+
       - name: Terraform plan
         run: ./scripts/github_action/plan.sh
 
