@@ -1,6 +1,6 @@
 name: Renovate terraform
 
-on: pull_request
+on: [push, pull_request]
 
 jobs:  
   update-terraform-version:
