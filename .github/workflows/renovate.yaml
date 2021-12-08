@@ -9,7 +9,7 @@ jobs:
     if: startsWith(github.head_ref, 'renovate-terraform')
     permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       id-token: write # IDトークンの取得に必要な情報を環境変数に設定してもらえる。具体的にはConfigure AWS credentialsのwith内のとこ。
-      contents: read
+      contents: write
 
     steps: 
       - name: Checkout repository
@@ -41,7 +41,7 @@ jobs:
       - name: Terraform plan with tfnotify
         run: ./scripts/github_action/plan.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # この後は.terraform.lock.hclがあるディレクトリ分だけinit & plan をする
       
