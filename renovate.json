@@ -8,7 +8,7 @@
       "branchPrefix": "renovate-terraform-provider/"
     },
     {
-      "matchPackageNames": ["terraform"],
+      "matchPackageNames": ["hashicorp/terraform"],
       "branchPrefix": "renovate-terraform/"
     }
   ]
