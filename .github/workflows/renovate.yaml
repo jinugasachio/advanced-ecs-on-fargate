@@ -1,15 +1,15 @@
-name: Renovate
+name: Renovate terraform
 
 on: pull_request
 
 jobs:  
-  update-terraform:
-    name: Terraform version update
+  update-terraform-version:
+    name: Update terraform version
     runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'renovate-terraform')
     permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       id-token: write # IDトークンの取得に必要な情報を環境変数に設定してもらえる。具体的にはConfigure AWS credentialsのwith内のとこ。
       contents: read
-    if: startsWith(github.head_ref, 'renovate-terraform')
 
     steps: 
       - name: Checkout repository
