@@ -13,7 +13,7 @@ jobs:
     if: startsWith(github.head_ref, 'renovate-terraform')
     steps: 
       - name: Checkout repository
-        uses: actions/checkout@v2 # https://github.com/actions/checkout デフォルトで pull/xxx/merge ブランチにチェックアウトする
+        uses: actions/checkout@v2
 
       - name: Detect terraform version
         run: printf "TF_VERSION=%s" $(cat .terraform-version) >> $GITHUB_ENV
