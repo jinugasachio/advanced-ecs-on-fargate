@@ -40,7 +40,8 @@ jobs:
 
       - name: Terraform plan with tfnotify
         run: ./scripts/github_action/plan.sh
-        env: GITHUB_TOKEN: ${{ secrets.github_token }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
 
       # この後は.terraform.lock.hclがあるディレクトリ分だけinit & plan をする
       
