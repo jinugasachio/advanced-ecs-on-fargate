@@ -36,6 +36,9 @@ jobs:
       - name: Confirm AWS credentials
         run: aws sts get-caller-identity
 
+      - name: Terraform plan
+        run: ./scripts/github_action/plan.sh
+
       # この後は.terraform.lock.hclがあるディレクトリ分だけinit & plan をする
       
 
