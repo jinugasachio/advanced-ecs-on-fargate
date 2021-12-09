@@ -1,10 +1,10 @@
-name: Renovate terraform
+name: Terraform plan
 
 on: pull_request
 
 jobs:  
-  update-terraform-version:
-    name: Update terraform version
+  execute-terraform-plan:
+    name: terraform plan
     runs-on: ubuntu-latest
     if: startsWith(github.head_ref, 'renovate-terraform')
     permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
