@@ -1,6 +1,6 @@
 name: Renovate terraform
 
-on: [push, pull_request]
+on: pull_request
 
 jobs:  
   update-terraform-version:
@@ -9,6 +9,8 @@ jobs:
     if: startsWith(github.head_ref, 'renovate-terraform')
     permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       id-token: write # IDトークンの取得に必要な情報を環境変数に設定してもらえる。具体的にはConfigure AWS credentialsのwith内のとこ。
+      contents: write
+      pull-requests: write
 
     steps: 
       - name: Checkout repository
@@ -23,9 +25,9 @@ jobs:
         uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
         with:
           terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Install tfnotify
-        run: ./scripts/install.sh
+      
+      - name: Install tfcmt
+        run: ./scripts/github_action/install_tfcmt.sh
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
@@ -37,9 +39,14 @@ jobs:
       - name: Confirm AWS credentials
         run: aws sts get-caller-identity
 
-      - name: Terraform plan with tfnotify
+      - name: Detect pull_request number 
+        run: printf "PULL_REQUEST_NUMBER=%s" $(echo $GITHUB_REF | sed -e 's/[^0-9]//g') >> $GITHUB_ENV
+
+      - name: Terraform plan with tfcmt
         run: ./scripts/github_action/plan.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
-
+          PULL_REQUEST_NUMBER: ${{ env.PULL_REQUEST_NUMBER }}
+          REPOSITORY_OWNER: jinugasachio
+          REPOSITORY_NAME: advanced-ecs-on-fargate
   # update-terraform-provider

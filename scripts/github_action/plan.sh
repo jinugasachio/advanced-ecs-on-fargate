@@ -8,7 +8,7 @@ do
   cd ${GITHUB_WORKSPACE}/$dir
   if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
     terraform init -input=false -no-color
-    terraform plan -input=false -no-color | tfnotify --config ${GITHUB_WORKSPACE}/.tfnotify/github.yaml plan --message "$dir"
+    tfcmt --config ${GITHUB_WORKSPACE}/tfcmt.yaml plan -- terraform plan
   fi
 done
 
