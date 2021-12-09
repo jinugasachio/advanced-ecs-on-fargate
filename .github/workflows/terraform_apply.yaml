@@ -38,16 +38,11 @@ jobs:
           role-session-name: GitHubActions
           aws-region: us-west-2 # オレゴン
 
-
       - name: Detect PR number pushed to main
         uses: jwalton/gh-find-current-pr@v1
         id: detect-pr
         with:
           state: open
-
-      - run: echo "Your PR is ${PR}"
-        env:
-          PR: ${{ steps.detect-pr.outputs.pr }}
 
       - name: Terraform apply with tfcmt
         run: ./scripts/github_action/terraform_apply.sh
