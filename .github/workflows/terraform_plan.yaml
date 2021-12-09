@@ -39,14 +39,11 @@ jobs:
       - name: Confirm AWS credentials
         run: aws sts get-caller-identity
 
-      - name: Detect pull_request number 
-        run: printf "PULL_REQUEST_NUMBER=%s" $(echo $GITHUB_REF | sed -e 's/[^0-9]//g') >> $GITHUB_ENV
-
       - name: Terraform plan with tfcmt
         run: ./scripts/github_action/plan.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
-          PULL_REQUEST_NUMBER: ${{ env.PULL_REQUEST_NUMBER }}
+          PULL_REQUEST_NUMBER: ${{ github.event.number }} # pull_request イベントであることに依存なので注意。https://docs.github.com/ja/developers/webhooks-and-events/events/github-event-types#pullrequestevent
           REPOSITORY_OWNER: jinugasachio
           REPOSITORY_NAME: advanced-ecs-on-fargate
   # update-terraform-provider
