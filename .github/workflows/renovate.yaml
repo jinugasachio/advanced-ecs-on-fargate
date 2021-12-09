@@ -9,6 +9,7 @@ jobs:
     if: startsWith(github.head_ref, 'renovate-terraform')
     permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       id-token: write # IDトークンの取得に必要な情報を環境変数に設定してもらえる。具体的にはConfigure AWS credentialsのwith内のとこ。
+      contents: write
 
     steps: 
       - name: Checkout repository
