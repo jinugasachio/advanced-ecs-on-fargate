@@ -1,0 +1,98 @@
+
+ci:
+  pr:
+  - type: envsubst
+    value: "${PULL_REQUEST_NUMBER}"
+  owner:
+  - type: envsubst
+    value: "${REPOSITORY_OWNER}"
+  repo:
+  - type: envsubst
+    value: "${REPOSITORY_NAME}"
+templates:
+  plan_title: "## {{if eq .ExitCode 1}}:x: {{end}}Plan Result{{if .Vars.target}} ({{.Vars.target}}){{end}}"
+  apply_title: "## :{{if eq .ExitCode 0}}white_check_mark{{else}}x{{end}}: Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}"
+
+  result: "{{if .Result}}<pre><code>{{ .Result }}</code></pre>{{end}}"
+  updated_resources: |
+    {{if .CreatedResources}}
+    * Create
+    {{- range .CreatedResources}}
+      * {{.}}
+    {{- end}}{{end}}{{if .UpdatedResources}}
+    * Update
+    {{- range .UpdatedResources}}
+      * {{.}}
+    {{- end}}{{end}}{{if .DeletedResources}}
+    * Delete
+    {{- range .DeletedResources}}
+      * {{.}}
+    {{- end}}{{end}}{{if .ReplacedResources}}
+    * Replace
+    {{- range .ReplacedResources}}
+      * {{.}}
+    {{- end}}{{end}}
+  deletion_warning: |
+    ### :warning: Resource Deletion will happen :warning:
+    This plan contains resource delete operation. Please check the plan result very carefully!
+terraform:
+  plan:
+    disable_label: false
+    template: |
+      {{template "plan_title" .}}
+
+      {{if .Link}}[CI link]({{.Link}}){{end}}
+
+      {{if .HasDestroy}}{{template "deletion_warning" .}}{{end}}
+      {{template "result" .}}
+      {{template "updated_resources" .}}
+      <details><summary>Details (Click me)</summary>
+      {{wrapCode .CombinedOutput}}
+      </details>
+      {{if .ErrorMessages}}
+      ## :warning: Errors
+      {{range .ErrorMessages}}
+      * {{. -}}
+      {{- end}}{{end}}
+    when_add_or_update_only:
+      label: "{{if .Vars.target}}{{.Vars.target}}/{{end}}add-or-update"
+      label_color: 1d76db # blue
+    when_destroy:
+      label: "{{if .Vars.target}}{{.Vars.target}}/{{end}}destroy"
+      label_color: d93f0b # red
+    when_no_changes:
+      label: "{{if .Vars.target}}{{.Vars.target}}/{{end}}no-changes"
+      label_color: 0e8a16 # green
+    when_plan_error:
+      label:
+      label_color:
+    when_parse_error:
+      label:
+      label_color:
+  apply:
+    template: |
+      {{template "apply_title" .}}
+
+      {{if .Link}}[CI link]({{.Link}}){{end}}
+
+      {{template "result" .}}
+
+      <details><summary>Details (Click me)</summary>
+      {{wrapCode .CombinedOutput}}
+      </details>
+      {{if .ErrorMessages}}
+      ## :warning: Errors
+      {{range .ErrorMessages}}
+      * {{. -}}
+      {{- end}}{{end}}
+    when_parse_error:
+      template: |
+        ## Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}
+
+        {{if .Link}}[CI link]({{.Link}}){{end}}
+
+        It failed to parse the result.
+
+        <details><summary>Details (Click me)</summary>
+        {{wrapCode .CombinedOutput}}
+        </details>
