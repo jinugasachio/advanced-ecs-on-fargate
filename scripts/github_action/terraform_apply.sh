@@ -5,7 +5,7 @@ CHANGED_DIRS=$(git --no-pager diff HEAD..HEAD^ --name-only  | xargs -I{} dirname
 
 for dir in $CHANGED_DIRS
 do
-  cd ${CODEBUILD_SRC_DIR}/$dir
+  cd ${GITHUB_WORKSPACE}/$dir
   if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
     terraform init -input=false
     tfcmt --config ${GITHUB_WORKSPACE}/tfcmt.yaml apply -- terraform apply -auto-approve
