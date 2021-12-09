@@ -36,9 +36,6 @@ jobs:
           role-session-name: GitHubActions
           aws-region: us-west-2 # オレゴン
 
-      - name: Confirm AWS credentials
-        run: aws sts get-caller-identity
-
       - name: Terraform plan with tfcmt
         run: ./scripts/github_action/plan.sh
         env:
