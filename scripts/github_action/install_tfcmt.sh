@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 BASE_URL=https://github.com/suzuki-shunsuke/tfcmt/releases/download
 DOWNLOAD_URL="${BASE_URL}/v2.1.0/tfcmt_linux_amd64.tar.gz"

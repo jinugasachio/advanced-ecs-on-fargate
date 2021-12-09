@@ -6,6 +6,9 @@ jobs:
   execute-terraform-plan:
     name: terraform plan
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       id-token: write # IDトークンの取得に必要な情報を環境変数に設定してもらえる。具体的にはConfigure AWS credentialsのwith内のとこ。
       contents: write
