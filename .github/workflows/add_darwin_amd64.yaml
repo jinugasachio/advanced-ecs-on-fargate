@@ -54,4 +54,4 @@ jobs:
         with:
           add: '.'
           message: 'Add platform darwin_amd64 to all terraform.lock.hcl'
-          default_author: GitHub Actions
+          default_author: github_actions
