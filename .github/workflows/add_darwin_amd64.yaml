@@ -1,15 +1,13 @@
-
 name: Add darwin_amd64 platform to terraform.lock.hcl
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches:
-      - 'renovate-terraform-provider/*'
 
 jobs:  
   add-darwin-amd64:
     name: add darwin_amd64
+    if: startsWith(github.head_ref, 'renovate-terraform-provider/')
     runs-on: ubuntu-latest
     defaults:
       run:
