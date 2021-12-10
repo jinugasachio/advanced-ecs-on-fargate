@@ -30,6 +30,12 @@ templates:
     {{- range .ReplacedResources}}
       * {{.}}
     {{- end}}{{end}}
+  changed_result: |
+    {{if .ChangedResult}}
+    <details><summary>Change Result (Click me)</summary>
+    {{wrapCode .ChangedResult}}
+    </details>
+    {{end}}
   deletion_warning: |
     ### :warning: Resource Deletion will happen :warning:
     This plan contains resource delete operation. Please check the plan result very carefully!
@@ -51,9 +57,7 @@ terraform:
       {{if .HasDestroy}}{{template "deletion_warning" .}}{{end}}
       {{template "result" .}}
       {{template "updated_resources" .}}
-      <details><summary>Details (Click me)</summary>
-      {{wrapCode .CombinedOutput}}
-      </details>
+      {{template "changed_result" .}}
       {{template "error_message" .}}
     when_add_or_update_only:
       label: "add-or-update"
@@ -72,9 +76,7 @@ terraform:
 
       {{template "result" .}}
 
-      <details><summary>Details (Click me)</summary>
-      {{wrapCode .CombinedOutput}}
-      </details>
+      {{template "changed_result" .}}
       {{template "error_message" .}}
     when_parse_error:
       template: |
