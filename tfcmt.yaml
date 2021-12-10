@@ -33,6 +33,13 @@ templates:
   deletion_warning: |
     ### :warning: Resource Deletion will happen :warning:
     This plan contains resource delete operation. Please check the plan result very carefully!
+  error_message: |
+    {{if .ErrorMessages}}
+    ## :warning: Errors
+    {{range .ErrorMessages}}
+    * {{. -}}
+    {{- end}}{{end}}
+
 terraform:
   plan:
     disable_label: false
@@ -47,11 +54,7 @@ terraform:
       <details><summary>Details (Click me)</summary>
       {{wrapCode .CombinedOutput}}
       </details>
-      {{if .ErrorMessages}}
-      ## :warning: Errors
-      {{range .ErrorMessages}}
-      * {{. -}}
-      {{- end}}{{end}}
+      {{template "error_message" .}}
     when_add_or_update_only:
       label: "add-or-update"
       label_color: 1d76db # blue
@@ -61,12 +64,6 @@ terraform:
     when_no_changes:
       label: "no-changes"
       label_color: 0e8a16 # green
-    when_plan_error:
-      label:
-      label_color:
-    when_parse_error:
-      label:
-      label_color:
   apply:
     template: |
       {{template "apply_title" .}}
@@ -78,11 +75,7 @@ terraform:
       <details><summary>Details (Click me)</summary>
       {{wrapCode .CombinedOutput}}
       </details>
-      {{if .ErrorMessages}}
-      ## :warning: Errors
-      {{range .ErrorMessages}}
-      * {{. -}}
-      {{- end}}{{end}}
+      {{template "error_message" .}}
     when_parse_error:
       template: |
         ## Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}
