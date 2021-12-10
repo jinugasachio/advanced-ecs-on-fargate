@@ -20,8 +20,11 @@ jobs:
       - name: make values
         id: set-matrix
         run: |
-          echo $(./scripts/github_action/detect_target_dirs.sh | jq -cR 'split(" ")')
+
+          echo $(./scripts/github_action/detect_target_dirs.sh)
           echo "::set-output name=value::${target_dirs}"
+        env:
+          GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}
 
   execute:
     needs: set-matrix
