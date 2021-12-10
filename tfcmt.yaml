@@ -36,9 +36,22 @@ templates:
     {{wrapCode .ChangedResult}}
     </details>
     {{end}}
+  change_outside_terraform: |
+    {{if .ChangeOutsideTerraform}}
+    <details><summary>:warning: Note: Objects have changed outside of Terraform</summary>
+    {{wrapCode .ChangeOutsideTerraform}}
+    </details>
+    {{end}}
+  warning: |
+    {{if .Warning}}
+    ## :warning: Warnings :warning:
+    {{wrapCode .Warning}}
+    {{end}}
   deletion_warning: |
+    {{if .HasDestroy}}
     ### :warning: Resource Deletion will happen :warning:
     This plan contains resource delete operation. Please check the plan result very carefully!
+    {{end}}
   error_message: |
     {{if .ErrorMessages}}
     ## :warning: Errors
@@ -51,13 +64,13 @@ terraform:
     disable_label: false
     template: |
       {{template "plan_title" .}}
-
       {{if .Link}}[CI link]({{.Link}}){{end}}
-
-      {{if .HasDestroy}}{{template "deletion_warning" .}}{{end}}
+      {{template "deletion_warning" .}}
       {{template "result" .}}
       {{template "updated_resources" .}}
       {{template "changed_result" .}}
+      {{template "change_outside_terraform" .}}
+      {{template "warning" .}}
       {{template "error_message" .}}
     when_add_or_update_only:
       label: "add-or-update"
@@ -71,21 +84,17 @@ terraform:
   apply:
     template: |
       {{template "apply_title" .}}
-
       {{if .Link}}[CI link]({{.Link}}){{end}}
-
       {{template "result" .}}
-
       {{template "changed_result" .}}
+      {{template "change_outside_terraform" .}}
+      {{template "warning" .}}
       {{template "error_message" .}}
     when_parse_error:
       template: |
         ## Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}
-
         {{if .Link}}[CI link]({{.Link}}){{end}}
-
         It failed to parse the result.
-
         <details><summary>Details (Click me)</summary>
         {{wrapCode .CombinedOutput}}
         </details>
