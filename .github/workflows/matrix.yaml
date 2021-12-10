@@ -1,0 +1,28 @@
+name: Dynamic matrix test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  set-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      something: ${{ steps.set-matrix.outputs.value }}
+    steps:
+      - name: make values
+        id: set-matrix
+        run: |
+          echo $(./scripts/github_action/detect_target_dirs.sh | jq -cR 'split(" ")')
+          echo "::set-output name=value::${target_dirs}"
+
+  execute:
+    needs: set-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        hoge: ${{fromJson(needs.set-matrix.outputs.something)}}
+    steps:
+      - run: echo ${{ matrix.hoge }}
+
