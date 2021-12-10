@@ -13,9 +13,8 @@ jobs:
       - name: make values
         id: set-matrix
         run: |
-          echo '["hoge","fuga"]' | jq -c
-          list=$(echo '["hoge","fuga"]' | jq -c)
-          echo "::set-output name=value::${list}"
+          echo $(./scripts/github_action/detect_target_dirs.sh | jq -cR 'split(" ")')
+          echo "::set-output name=value::${target_dirs}"
 
   execute:
     needs: set-matrix
