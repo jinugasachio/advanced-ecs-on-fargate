@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIG_FILE="provider.tf"
-CHANGED_DIRS=`${GITHUB_WORKSPACE}/scripts/github_action/detect_changed_dirs.sh`
+CHANGED_DIRS=`./scripts/github_action/detect_changed_dirs.sh`
 TARGET_DIRS=()
 
 for dir in $CHANGED_DIRS
