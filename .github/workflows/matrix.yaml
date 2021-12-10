@@ -20,8 +20,8 @@ jobs:
       - name: make values
         id: set-matrix
         run: |
-
-          echo $(./scripts/github_action/detect_target_dirs.sh)
+          ./scripts/github_action/detect_target_dirs.sh
+          echo ${{ env.GITHUB_WORKSPACE }}
           echo "::set-output name=value::${target_dirs}"
         env:
           GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}
