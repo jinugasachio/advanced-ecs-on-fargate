@@ -12,4 +12,4 @@ do
   fi
 done
 
-echo ${TARGET_DIRS[@]}
+echo ${TARGET_DIRS[@]} | jq -cR 'split(" ")'
