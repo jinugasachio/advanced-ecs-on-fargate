@@ -7,6 +7,9 @@ on:
 jobs:
   set-matrix:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     outputs:
       something: ${{ steps.set-matrix.outputs.value }}
     steps:
