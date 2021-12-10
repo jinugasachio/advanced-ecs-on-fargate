@@ -21,7 +21,7 @@ jobs:
         id: set-matrix
         run: |
           echo $(git --no-pager diff origin/main..HEAD --name-only  | xargs -I{} dirname {} | awk '!a[$0]++{print}' )
-          target_dirs=$(./scripts/github_action/detect_target_dirs.sh | jq -cR 'split(" ")')
+          target_dirs=$(`./scripts/github_action/detect_target_dirs.sh` | jq -cR 'split(" ")')
           echo "::set-output name=value::${target_dirs}"
 
   execute:
