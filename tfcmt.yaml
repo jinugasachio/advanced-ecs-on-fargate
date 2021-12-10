@@ -11,6 +11,7 @@ ci:
 templates:
   plan_title: "## {{if eq .ExitCode 1}}:x: {{end}}Plan Result{{if .Vars.target}} ({{.Vars.target}}){{end}}"
   apply_title: "## :{{if eq .ExitCode 0}}white_check_mark{{else}}x{{end}}: Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}"
+  ci_link: "{{if .Link}}[CI link]({{.Link}}){{end}}"
   result: "{{if .Result}}<pre><code>{{ .Result }}</code></pre>{{end}}"
   updated_resources: |
     {{if .CreatedResources}}
@@ -64,7 +65,7 @@ terraform:
     disable_label: false
     template: |
       {{template "plan_title" .}}
-      {{if .Link}}[CI link]({{.Link}}){{end}}
+      {{template "ci_link" .}}
       {{template "deletion_warning" .}}
       {{template "result" .}}
       {{template "updated_resources" .}}
@@ -84,7 +85,7 @@ terraform:
   apply:
     template: |
       {{template "apply_title" .}}
-      {{if .Link}}[CI link]({{.Link}}){{end}}
+      {{template "ci_link" .}}
       {{template "result" .}}
       {{template "changed_result" .}}
       {{template "change_outside_terraform" .}}
@@ -93,7 +94,7 @@ terraform:
     when_parse_error:
       template: |
         ## Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}
-        {{if .Link}}[CI link]({{.Link}}){{end}}
+        {{template "ci_link" .}}
         It failed to parse the result.
         <details><summary>Details (Click me)</summary>
         {{wrapCode .CombinedOutput}}
