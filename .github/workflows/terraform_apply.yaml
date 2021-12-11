@@ -48,7 +48,9 @@ jobs:
           state: open
 
       - name: Terraform apply with tfcmt
-        run: ./scripts/github_action/terraform_apply.sh
+        run: |
+          dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/terraform_apply.sh ${dirs}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
           PULL_REQUEST_NUMBER: ${{ steps.detect-pr.outputs.pr }}
