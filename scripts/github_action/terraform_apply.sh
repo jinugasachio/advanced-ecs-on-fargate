@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIG_FILE="provider.tf"
-CHANGED_DIRS=$(git --no-pager diff HEAD..HEAD^ --name-only  | xargs -I{} dirname {} | awk '!a[$0]++{print}') # 差分のあるファイルのディレクトリを一意に取得する
+CHANGED_DIRS=`${GITHUB_WORKSPACE}/scripts/github_action/detect_changed_dirs.sh`
 
 for dir in $CHANGED_DIRS
 do

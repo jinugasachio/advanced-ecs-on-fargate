@@ -6,7 +6,7 @@ on:
 
 jobs:  
   add-darwin-amd64:
-    name: add darwin_amd64
+    name: Add darwin_amd64
     if: startsWith(github.head_ref, 'renovate-terraform-provider/')
     runs-on: ubuntu-latest
     defaults:
@@ -41,7 +41,7 @@ jobs:
           role-session-name: GitHubActions
           aws-region: us-west-2 # オレゴン
 
-      - name: Add darwin_amd64 platform and terraform plan
+      - name: Add darwin_amd64 platform and execute terraform plan
         run: ./scripts/github_action/add_darwin_amd64.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
@@ -49,7 +49,7 @@ jobs:
           REPOSITORY_OWNER: jinugasachio
           REPOSITORY_NAME: advanced-ecs-on-fargate
     
-      - name: Commit lock file
+      - name: Commit lock files
         uses: EndBug/add-and-commit@v7
         with:
           add: '.'
