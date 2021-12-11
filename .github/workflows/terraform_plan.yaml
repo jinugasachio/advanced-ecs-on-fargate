@@ -30,6 +30,9 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
       
+      - name: Execute terraform fmt
+        run: terraform fmt -recursive .
+      
       - name: Install tfcmt
         run: ./scripts/github_action/install_tfcmt.sh
 
@@ -40,7 +43,7 @@ jobs:
           role-session-name: GitHubActions
           aws-region: us-west-2 # オレゴン
 
-      - name: Terraform plan with tfcmt
+      - name: Execute terraform plan
         run: |
           dirs=$(./scripts/github_action/detect_changed_dirs.sh)
           ./scripts/github_action/terraform_plan.sh ${dirs}

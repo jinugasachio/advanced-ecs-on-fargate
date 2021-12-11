@@ -31,6 +31,9 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
       
+      - name: Execute terraform fmt
+        run: terraform fmt -recursive .
+      
       - name: Install tfcmt
         run: ./scripts/github_action/install_tfcmt.sh
 
@@ -47,7 +50,7 @@ jobs:
         with:
           state: open
 
-      - name: Terraform apply with tfcmt
+      - name: Execute terraform apply
         run: |
           dirs=$(./scripts/github_action/detect_changed_dirs.sh)
           ./scripts/github_action/terraform_apply.sh ${dirs}
