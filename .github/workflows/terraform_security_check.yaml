@@ -1,0 +1,29 @@
+name: Terraform security check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-terraform-security:
+    name: Terraform security check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        # with:
+        #   fetch-depth: 0
+        
+      - name: Check terraform security by tfsec
+        uses: aquasecurity/tfsec-pr-commenter-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tfsec_version: latest
+          commenter_version: latest
