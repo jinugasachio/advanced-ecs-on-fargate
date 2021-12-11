@@ -1,9 +1,9 @@
 #!/bin/bash
 
 CONFIG_FILE="provider.tf"
-CHANGED_DIRS=`${GITHUB_WORKSPACE}/scripts/github_action/detect_changed_dirs.sh`
+TARGET_DIRS=$@
 
-for dir in $CHANGED_DIRS
+for dir in $TARGET_DIRS
 do
   cd ${GITHUB_WORKSPACE}/$dir
   if [ -e ${CONFIG_FILE} ]; then # provider.tfが存在するならば
