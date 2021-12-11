@@ -4,9 +4,28 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-jobs:  
+jobs:
+  detect-target-dirs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      target-dirs: ${{ steps.detect-target-dirs.outputs.target_dirs }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags. Default: 1
+      - name: Detect target dirs
+        id: detect-target-dirs
+        run: |
+          target_dirs=$(./scripts/github_action/detect_target_dirs.sh)
+          echo "::set-output name=target_dirs::${target_dirs}"
+  
   execute-terraform-plan:
     name: terraform plan
+    needs: detect-target-dirs
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -15,6 +34,10 @@ jobs:
       id-token: write # IDトークンの取得に必要な情報を環境変数に設定してもらえる。具体的にはConfigure AWS credentialsのwith内のとこ。
       contents: write
       pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix:
+        hoge: ${{fromJson(needs.detect-target-dirs.outputs.target-dirs)}}
 
     steps: 
       - name: Checkout repository
