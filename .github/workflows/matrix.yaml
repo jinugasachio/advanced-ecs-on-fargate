@@ -31,5 +31,6 @@ jobs:
       matrix:
         hoge: ${{fromJson(needs.set-matrix.outputs.something)}}
     steps:
+      - run: echo "共通だよ"
       - run: echo ${{ matrix.hoge }}
 
