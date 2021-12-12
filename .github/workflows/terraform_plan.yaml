@@ -36,6 +36,16 @@ jobs:
       - name: Install tfcmt
         run: ./scripts/github_action/install_tfcmt.sh
 
+      - name: Execute terraform init
+        run: |
+          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/terraform_init.sh ${changed_dirs}
+
+      - name: Execute terraform validate
+        run: |
+          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/terraform_validate.sh ${changed_dirs}
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
         with:
@@ -45,8 +55,8 @@ jobs:
 
       - name: Execute terraform plan
         run: |
-          dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_plan.sh ${dirs}
+          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/terraform_plan.sh ${changed_dirs}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
           PULL_REQUEST_NUMBER: ${{ github.event.number }} # pull_request イベントであることに依存なので注意。https://docs.github.com/ja/developers/webhooks-and-events/events/github-event-types#pullrequestevent
