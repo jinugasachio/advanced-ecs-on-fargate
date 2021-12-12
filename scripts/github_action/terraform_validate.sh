@@ -1,9 +1,4 @@
 #!/bin/bash
 
 TARGET_DIRS=$@
-
-for dir in $TARGET_DIRS
-do
-  cd ${GITHUB_WORKSPACE}/$dir
-  terraform validate -no-color
-done
+echo $TARGET_DIRS | xargs -r -n 1 bash -c 'terraform validate ${GITHUB_WORKSPACE}/${0}'
