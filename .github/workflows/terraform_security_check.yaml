@@ -5,8 +5,33 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  detect-changed-dirs:
+    name: Detect changed dirs
+    runs-on: ubuntu-latest
+    outputs:
+      dirs: ${{ steps.set-changed-dirs.outputs.dirs }}
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
+      - name: Set changed dirs to output
+        id: set-changed-dirs
+        run: |
+          changed_dirs=($(./scripts/github_action/detect_changed_dirs.sh))
+          formatted_changed_dirs=$(echo ${changed_dirs[@]} | jq -cR 'split(" ")')
+          echo "::set-output name=dirs::${formatted_changed_dirs}"
+
   check-terraform-security:
     name: Terraform security check
+    needs: detect-changed-dirs
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -14,16 +39,19 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix:
+        changed-dirs: ${{ fromJson(needs.detect-changed-dirs.outputs.dirs) }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        # with:
-        #   fetch-depth: 0
         
       - name: Check terraform security by tfsec
         uses: aquasecurity/tfsec-pr-commenter-action@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          working_directory: ${{ matrix.changed-dirs }}
           tfsec_version: latest
           commenter_version: latest
