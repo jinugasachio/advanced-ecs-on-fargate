@@ -37,6 +37,13 @@ jobs:
       - name: Install tfcmt
         run: ./scripts/github_action/install_tfcmt.sh
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
+        with:
+          role-to-assume: ${{ secrets.ARN_TO_ASSUME_ROLE }}
+          role-session-name: GitHubActions
+          aws-region: us-west-2 # オレゴン
+
       - name: Execute terraform init
         run: |
           changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
@@ -46,13 +53,6 @@ jobs:
         run: |
           changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
           ./scripts/github_action/terraform_validate.sh ${changed_dirs}
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
-        with:
-          role-to-assume: ${{ secrets.ARN_TO_ASSUME_ROLE }}
-          role-session-name: GitHubActions
-          aws-region: us-west-2 # オレゴン
 
       - name: Detect PR number pushed to main
         uses: jwalton/gh-find-current-pr@v1
