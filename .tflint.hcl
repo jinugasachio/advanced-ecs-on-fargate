@@ -1,4 +1,5 @@
 config {
+  # ここは "./.tflint.d/plugins" にしてリポジトリに含めた方が良かったりするのか？わからん
   plugin_dir = "~/.tflint.d/plugins"
 
   module = true
