@@ -48,6 +48,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         
+      # TODO: *.tf ファイルがないディレクトリでは実行する必要がないはずなので何らかのフィルタを後でかける
       - name: Check terraform security by tfsec
         uses: aquasecurity/tfsec-pr-commenter-action@main
         with:

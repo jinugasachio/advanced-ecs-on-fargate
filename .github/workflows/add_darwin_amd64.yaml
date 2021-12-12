@@ -1,4 +1,4 @@
-name: Add darwin_amd64 platform to terraform.lock.hcl
+name: Additional commit depending on updating terraform provider
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:  
   add-darwin-amd64:
-    name: Add darwin_amd64
+    name: Add darwin_amd64 platform
     if: startsWith(github.head_ref, 'renovate-terraform-provider/')
     runs-on: ubuntu-latest
     defaults:
@@ -34,6 +34,21 @@ jobs:
       - name: Install tfcmt
         run: ./scripts/github_action/install_tfcmt.sh
 
+      - name: Execute terraform init -upgrade
+        run: |
+          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/terraform_init_upgrade.sh ${changed_dirs}
+
+      - name: Add darwin_amd64 platform
+        run: |
+          dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/add_darwin_amd64.sh ${dirs}
+
+      - name: Execute terraform validate
+        run: |
+          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/terraform_validate.sh ${changed_dirs}
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
         with:
@@ -41,17 +56,17 @@ jobs:
           role-session-name: GitHubActions
           aws-region: us-west-2 # オレゴン
 
-      - name: Add darwin_amd64 platform and execute terraform plan
+      - name: Execute terraform plan
         run: |
-          dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/add_darwin_amd64.sh ${dirs}
+          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/terraform_plan.sh ${changed_dirs}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
           PULL_REQUEST_NUMBER: ${{ github.event.number }} # pull_request イベントであることに依存なので注意。https://docs.github.com/ja/developers/webhooks-and-events/events/github-event-types#pullrequestevent
           REPOSITORY_OWNER: jinugasachio
           REPOSITORY_NAME: advanced-ecs-on-fargate
     
-      - name: Commit lock files
+      - name: Commit terraform.lock.hcl files
         uses: EndBug/add-and-commit@v7
         with:
           add: '.'
