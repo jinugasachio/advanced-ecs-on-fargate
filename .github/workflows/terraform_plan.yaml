@@ -6,7 +6,7 @@ on:
 
 jobs:  
   execute-terraform-plan:
-    name: Terraform plan
+    name: Execute terraform plan
     runs-on: ubuntu-latest
     defaults:
       run:

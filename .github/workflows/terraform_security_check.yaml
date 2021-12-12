@@ -30,7 +30,7 @@ jobs:
           echo "::set-output name=dirs::${formatted_changed_dirs}"
 
   check-terraform-security:
-    name: check
+    name: Check
     needs: detect-changed-dirs
     runs-on: ubuntu-latest
     defaults:
