@@ -53,6 +53,11 @@ jobs:
           changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
           ./scripts/github_action/terraform_validate.sh ${changed_dirs}
 
+      - name: Execute tflint
+        run: |
+          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
+          ./scripts/github_action/tflint.sh ${changed_dirs}
+
       - name: Execute terraform plan
         run: |
           changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
