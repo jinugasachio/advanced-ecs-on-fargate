@@ -52,6 +52,11 @@ jobs:
         run: |
           changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
           ./scripts/github_action/terraform_validate.sh ${changed_dirs}
+      
+      - uses: terraform-linters/setup-tflint@v1
+        name: Setup TFLint
+        with:
+          tflint_version: v0.34.0 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
 
       - name: Execute tflint
         run: |
