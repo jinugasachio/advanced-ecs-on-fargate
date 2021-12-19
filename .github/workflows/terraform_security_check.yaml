@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Check terraform security by tfsec
-        uses: reviewdog/action-tfsec@c0a64a3f6600241486d87e46abb366ff34fe9f86 # v1.12.1
+        uses: reviewdog/action-tfsec@c0a64a3f6600241486d87e46abb366ff34fe9f86
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           working_directory: .
