@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-terraform-security:
-    name: Check
+    name: tfsec
     runs-on: ubuntu-latest
     defaults:
       run:
