@@ -3,6 +3,7 @@ module "vpc" {
   version                      = "3.11.0"
   name                         = "yukio-ugajin-vpc"
   cidr                         = "10.0.0.0/16"
+  create_igw                   = true
   create_database_subnet_group = true
 
   azs              = ["us-west-1b", "us-west-1c"]
