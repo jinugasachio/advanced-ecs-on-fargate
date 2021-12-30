@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG_FILE="provider.tf"
+CONFIG_FILE="terraform.tf"
 TARGET_DIRS=$@
 
 for dir in $TARGET_DIRS
