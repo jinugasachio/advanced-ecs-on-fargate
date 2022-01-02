@@ -1,4 +1,4 @@
 # 親ディレクトリに存在するterragrunt.hcl を探しその設定を継承
-include {
+include "root" {
   path = find_in_parent_folders()
 }
