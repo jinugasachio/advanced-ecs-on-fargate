@@ -8,9 +8,12 @@ jobs:
   execute-terraform-plan:
     name: Execute terraform plan
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
+        working-directory: ./environments/production
     permissions: # https://docs.github.com/ja/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       id-token: write # IDトークンの取得に必要な情報を環境変数に設定してもらえる。具体的にはConfigure AWS credentialsのwith内のとこ。
       contents: write
@@ -23,10 +26,10 @@ jobs:
           fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags. Default: 1
 
       - name: Detect terraform version
-        run: printf "TF_VERSION=%s" $(cat .terraform-version) >> $GITHUB_ENV
+        run: printf "TF_VERSION=%s" $(cat $GITHUB_WORKSPACE/.terraform-version) >> $GITHUB_ENV
 
       - name: Detect terragrunt version
-        run: printf "TG_VERSION=%s" $(cat .terragrunt-version) >> $GITHUB_ENV
+        run: printf "TG_VERSION=%s" $(cat $GITHUB_WORKSPACE/.terragrunt-version) >> $GITHUB_ENV
       
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
@@ -37,46 +40,33 @@ jobs:
         run: terraform fmt -diff -check -recursive .
       
       - name: Install tfcmt
-        run: ./scripts/github_action/install_tfcmt.sh
+        run: ${GITHUB_WORKSPACE}/scripts/github_action/install_tfcmt.sh
+
+      - name: Install terragrunt
+        run: $GITHUB_WORKSPACE/scripts/github_action/install_terragrunt.sh
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
         with:
           role-to-assume: ${{ secrets.ARN_TO_ASSUME_ROLE }}
           role-session-name: GitHubActions
-          aws-region: us-west-2 # オレゴン
+          aws-region: us-west-1
 
-      - name: Execute terraform init
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_init.sh ${changed_dirs}
-
-      - name: Execute terraform validate
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_validate.sh ${changed_dirs}
+      - name: Run terraform validate
+        run: terragrunt run-all validate --terragrunt-non-interactive
       
       - uses: terraform-linters/setup-tflint@v1
         name: Setup TFLint
         with:
-          tflint_version: v0.34.0 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
+          tflint_version: v0.34.1 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
 
-      - name: Execute tflint init
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/tflint_init.sh ${changed_dirs}
+      - name: Run tflint init
+        run: tflint --init --config $GITHUB_WORKSPACE/.tflint.hcl
 
       - name: Execute tflint
         run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/tflint.sh ${changed_dirs}
+          terraform_dirs=$($GITHUB_WORKSPACE/scripts/github_action/detect_terraform_dirs.sh)
+          $GITHUB_WORKSPACE/scripts/github_action/tflint.sh $terraform_dirs
 
-      - name: Execute terraform plan
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_plan.sh ${changed_dirs}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
-          PULL_REQUEST_NUMBER: ${{ github.event.number }} # pull_request イベントであることに依存なので注意。https://docs.github.com/ja/developers/webhooks-and-events/events/github-event-types#pullrequestevent
-          REPOSITORY_OWNER: jinugasachio
-          REPOSITORY_NAME: advanced-ecs-on-fargate
+      - name: Run terraform plan
+        run: terragrunt run-all plan --terragrunt-tfpath $GITHUB_WORKSPACE/scripts/github_action/terraform_plan.sh
