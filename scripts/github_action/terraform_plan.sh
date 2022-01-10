@@ -1,12 +1,6 @@
 #!/bin/bash
 
-CONFIG_FILE="terraform.tf"
-TARGET_DIRS=$@
+set -euo pipefail
 
-for dir in $TARGET_DIRS
-do
-  cd ${GITHUB_WORKSPACE}/$dir
-  if [ -e ${CONFIG_FILE} ]; then
-    tfcmt --config ${GITHUB_WORKSPACE}/tfcmt.yaml -var target:$dir plan -- terraform plan -no-color
-  fi
-done
+CHANGED_DIRS=$@
+echo $CHANGED_DIRS | xargs -r -n 1 bash -c 'cd ${GITHUB_WORKSPACE}/${0} && tfcmt --config ${GITHUB_WORKSPACE}/tfcmt.yaml -var target:${0} plan -- terragrunt plan'

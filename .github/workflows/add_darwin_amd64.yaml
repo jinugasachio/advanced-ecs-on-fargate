@@ -26,6 +26,9 @@ jobs:
       - name: Detect terraform version
         run: printf "TF_VERSION=%s" $(cat .terraform-version) >> $GITHUB_ENV
       
+      - name: Detect terragrunt version
+        run: printf "TG_VERSION=%s" $(cat .terragrunt-version) >> $GITHUB_ENV
+      
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
         with:

@@ -1,12 +1,12 @@
-name: Terraform plan
+name: Terragrunt plan
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:  
-  execute-terraform-plan:
-    name: Execute terraform plan
+  run-terragrunt-plan:
+    name: Run terragrunt plan
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,57 +23,52 @@ jobs:
           fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags. Default: 1
 
       - name: Detect terraform version
-        run: printf "TF_VERSION=%s" $(cat .terraform-version) >> $GITHUB_ENV
+        run: printf "TF_VERSION=%s" $(cat ./.terraform-version) >> $GITHUB_ENV
+
+      - name: Detect terragrunt version
+        run: printf "TG_VERSION=%s" $(cat ./.terragrunt-version) >> $GITHUB_ENV
       
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
         with:
           terraform_version: ${{ env.TF_VERSION }}
       
-      - name: Execute terraform fmt
+      - name: Run terraform fmt
         run: terraform fmt -diff -check -recursive .
       
       - name: Install tfcmt
         run: ./scripts/github_action/install_tfcmt.sh
+
+      - name: Install terragrunt
+        run: ./scripts/github_action/install_terragrunt.sh
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
         with:
           role-to-assume: ${{ secrets.ARN_TO_ASSUME_ROLE }}
           role-session-name: GitHubActions
-          aws-region: us-west-2 # オレゴン
+          aws-region: us-west-1
 
-      - name: Execute terraform init
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_init.sh ${changed_dirs}
-
-      - name: Execute terraform validate
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_validate.sh ${changed_dirs}
+      - name: Run terragrunt validate
+        run: terragrunt run-all validate --terragrunt-non-interactive
       
       - uses: terraform-linters/setup-tflint@v1
         name: Setup TFLint
         with:
-          tflint_version: v0.34.0 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
+          tflint_version: v0.34.1 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
 
-      - name: Execute tflint init
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/tflint_init.sh ${changed_dirs}
+      - name: Run tflint init
+        run: tflint --init --config ./.tflint.hcl
 
-      - name: Execute tflint
+      - name: Run tflint
         run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/tflint.sh ${changed_dirs}
+          TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
+          ./scripts/github_action/tflint.sh $TF_DIRS
 
-      - name: Execute terraform plan
+      - name: Run terraform plan
         run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_plan.sh ${changed_dirs}
+          SPECIFIED_DIR=./environments/production
+          CHANGED_DIRS=$(./scripts/github_action/detect_changed_dirs.sh $SPECIFIED_DIR)
+          ./scripts/github_action/terraform_plan.sh $CHANGED_DIRS
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
-          PULL_REQUEST_NUMBER: ${{ github.event.number }} # pull_request イベントであることに依存なので注意。https://docs.github.com/ja/developers/webhooks-and-events/events/github-event-types#pullrequestevent
-          REPOSITORY_OWNER: jinugasachio
-          REPOSITORY_NAME: advanced-ecs-on-fargate
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
