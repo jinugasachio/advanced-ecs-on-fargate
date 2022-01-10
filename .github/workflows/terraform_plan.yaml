@@ -67,8 +67,7 @@ jobs:
 
       - name: Run terragrunt plan
         run: |
-          SPECIFIED_DIR=./environments/production
-          CHANGED_DIRS=$(./scripts/github_action/detect_changed_dirs.sh $SPECIFIED_DIR)
+          CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only ./environments/production | xargs -I{} dirname {} | awk '!a[$0]++{print}')
           ./scripts/github_action/terragrunt_plan.sh $CHANGED_DIRS
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

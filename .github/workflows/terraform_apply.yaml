@@ -68,8 +68,7 @@ jobs:
 
       - name: Run terragrunt apply
         run: |
-          SPECIFIED_DIR=./environments/production
-          CHANGED_DIRS=$(./scripts/github_action/detect_changed_dirs.sh $SPECIFIED_DIR)
+          CHANGED_DIRS=$(git --no-pager diff HEAD..HEAD^ --name-only ./environments/production | xargs -I{} dirname {} | awk '!a[$0]++{print}')
           ./scripts/github_action/terragrunt_apply.sh $CHANGED_DIRS
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
