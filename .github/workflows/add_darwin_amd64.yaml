@@ -58,12 +58,11 @@ jobs:
 
       - name: Run terragrunt plan
         run: |
-          CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only ./environments/staging ./environments/production | xargs -I{} dirname {} | awk '!a[$0]++{print}')
-          ./scripts/github_action/terragrunt_plan.sh $CHANGED_DIRS
-
+          CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only ./staging ./production | xargs -I{} dirname {} | awk '!a[$0]++{print}')
+          $GITHUB_WORKSPACE/scripts/github_action/terragrunt_plan.sh $CHANGED_DIRS
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./environments/production
+        working-directory: ./environments
 
       - name: Commit terraform.lock.hcl files
         uses: EndBug/add-and-commit@v7
