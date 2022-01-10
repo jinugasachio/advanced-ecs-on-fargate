@@ -73,3 +73,7 @@ jobs:
           ./scripts/github_action/terragrunt_apply.sh $CHANGED_DIRS
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+
+      - name: Debug
+        if: ${{ always() }}
+        uses: mxschmitt/action-tmate@v3
