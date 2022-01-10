@@ -4,6 +4,7 @@
 // resource "aws_vpc" "network" {
 //   cidr_block = "10.0.0.0/16"
 // }
+
 // module "vpc" {
 //   source                       = "terraform-aws-modules/vpc/aws"
 //   version                      = "3.11.0"
