@@ -4,8 +4,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Environments = "production"
-      Terraform    = "true"
+      Terraform = "true"
     }
   }
 }
