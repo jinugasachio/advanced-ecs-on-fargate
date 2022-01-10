@@ -65,10 +65,10 @@ jobs:
           TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
           ./scripts/github_action/tflint.sh $TF_DIRS
 
-      - name: Run terraform plan
+      - name: Run terragrunt plan
         run: |
           SPECIFIED_DIR=./environments/production
           CHANGED_DIRS=$(./scripts/github_action/detect_changed_dirs.sh $SPECIFIED_DIR)
-          ./scripts/github_action/terraform_plan.sh $CHANGED_DIRS
+          ./scripts/github_action/terragrunt_plan.sh $CHANGED_DIRS
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
