@@ -1,4 +1,4 @@
-name: Plan workflow
+name: Terragrunt plan
 
 on:
   pull_request:
