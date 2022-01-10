@@ -1,12 +1,12 @@
-name: Terraform security check
+name: Static analysis for security
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  check-terraform-security:
-    name: tfsec
+  run-tfsec:
+    name: Run tfsec
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check terraform security by tfsec
+      - name: Run tfsec
         uses: reviewdog/action-tfsec@d369687c2fd9373b8469e34602a714b24b78b0d3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

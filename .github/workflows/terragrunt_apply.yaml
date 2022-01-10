@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:  
-  execute-terraform-apply:
+  run-terragrunt-apply:
     name: Run terragrunt apply
     runs-on: ubuntu-latest
     defaults:
