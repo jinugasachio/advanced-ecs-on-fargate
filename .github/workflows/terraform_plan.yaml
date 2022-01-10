@@ -50,7 +50,7 @@ jobs:
           aws-region: us-west-1
 
       - name: Run terragrunt validate
-        run: terragrunt run-all validate --terragrunt-non-interactive
+        run: ./scripts/github_action/terragrunt_validate.sh
       
       - uses: terraform-linters/setup-tflint@v1
         name: Setup TFLint
