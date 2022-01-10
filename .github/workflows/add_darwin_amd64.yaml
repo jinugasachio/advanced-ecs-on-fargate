@@ -21,7 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags. Default: 1
+          fetch-depth: 0
 
       - name: Detect terraform version
         run: printf "TF_VERSION=%s" $(cat .terraform-version) >> $GITHUB_ENV
@@ -30,44 +30,41 @@ jobs:
         run: printf "TG_VERSION=%s" $(cat .terragrunt-version) >> $GITHUB_ENV
       
       - name: Setup terraform
-        uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
+        uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
       
       - name: Install tfcmt
         run: ./scripts/github_action/install_tfcmt.sh
 
+      - name: Install terragrunt
+        run: ./scripts/github_action/install_terragrunt.sh
+
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.ARN_TO_ASSUME_ROLE }}
           role-session-name: GitHubActions
-          aws-region: us-west-2 # オレゴン
+          aws-region: us-west-1
 
-      - name: Execute terraform init -upgrade
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_init_upgrade.sh ${changed_dirs}
+      - name: Run terragrunt init -upgrade
+        run: terragrunt run-all init -upgrade
 
       - name: Add darwin_amd64 platform
         run: |
-          dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/add_darwin_amd64.sh ${dirs}
+          TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
+          ./scripts/github_action/add_darwin_amd64.sh $TF_DIRS
 
-      - name: Execute terraform validate
-        run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_validate.sh ${changed_dirs}
+      - name: Run terragrunt validate
+        run: ./scripts/github_action/terragrunt_validate.sh
 
-      - name: Execute terraform plan
+      - name: Run terragrunt plan
         run: |
-          changed_dirs=$(./scripts/github_action/detect_changed_dirs.sh)
-          ./scripts/github_action/terraform_plan.sh ${changed_dirs}
+          TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
+          ./scripts/github_action/terragrunt_plan.sh $TF_DIRS
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
-          PULL_REQUEST_NUMBER: ${{ github.event.number }} # pull_request イベントであることに依存なので注意。https://docs.github.com/ja/developers/webhooks-and-events/events/github-event-types#pullrequestevent
-          REPOSITORY_OWNER: jinugasachio
-          REPOSITORY_NAME: advanced-ecs-on-fargate
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ./environments
     
       - name: Commit terraform.lock.hcl files
         uses: EndBug/add-and-commit@v7
