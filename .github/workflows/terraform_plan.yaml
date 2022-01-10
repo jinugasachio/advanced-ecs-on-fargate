@@ -34,7 +34,7 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
       
       - name: Run terraform fmt
-        run: terraform fmt -diff -check -recursive .
+        run: ./scripts/github_action/terraform_fmt.sh
       
       - name: Install tfcmt
         run: ./scripts/github_action/install_tfcmt.sh
