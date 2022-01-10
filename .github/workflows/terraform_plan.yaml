@@ -1,12 +1,12 @@
-name: Terraform plan
+name: Terragrunt plan
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:  
-  execute-terraform-plan:
-    name: Execute terraform plan
+  run-terragrunt-plan:
+    name: Run terragrunt plan
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -33,7 +33,7 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
       
-      - name: Execute terraform fmt
+      - name: Run terraform fmt
         run: terraform fmt -diff -check -recursive .
       
       - name: Install tfcmt
@@ -49,7 +49,7 @@ jobs:
           role-session-name: GitHubActions
           aws-region: us-west-1
 
-      - name: Run terraform validate
+      - name: Run terragrunt validate
         run: terragrunt run-all validate --terragrunt-non-interactive
       
       - uses: terraform-linters/setup-tflint@v1
@@ -67,8 +67,8 @@ jobs:
 
       - name: Run terraform plan
         run: |
-          RELATIVE_DIR=$GITHUB_WORKSPACE/environments/production
-          CHANGED_DIRS=$(./scripts/github_action/detect_changed_dirs.sh $RELATIVE_DIR)
+          SPECIFIED_DIR=./environments/production
+          CHANGED_DIRS=$(./scripts/github_action/detect_changed_dirs.sh $SPECIFIED_DIR)
           ./scripts/github_action/terraform_plan.sh $CHANGED_DIRS
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
