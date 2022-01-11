@@ -4,7 +4,10 @@
 // resource "aws_vpc" "network" {
 //   cidr_block = "10.0.0.0/16"
 // }
-
+resource "aws_instance" "foo" {
+  ami           = "ami-0ff8a91507f77f867"
+  instance_type = "t3.small"
+}
 // module "vpc" {
 //   source                       = "terraform-aws-modules/vpc/aws"
 //   version                      = "3.11.0"
