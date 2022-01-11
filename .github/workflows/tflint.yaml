@@ -1,4 +1,4 @@
-name: tflint
+name: TFlint
 
 on:
   pull_request:
