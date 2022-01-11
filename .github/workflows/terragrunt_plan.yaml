@@ -52,19 +52,6 @@ jobs:
       - name: Run terragrunt validate
         run: ./scripts/github_action/terragrunt_validate.sh
 
-      - uses: terraform-linters/setup-tflint@v1
-        name: Setup TFLint
-        with:
-          tflint_version: v0.34.1 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
-
-      - name: Run tflint init
-        run: ./scripts/github_action/tflint_init.sh
-
-      - name: Run tflint
-        run: |
-          TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
-          ./scripts/github_action/tflint.sh $TF_DIRS
-
       - name: Run terragrunt plan
         run: |
           CHANGED_DIRS=$(git --no-pager diff origin/main..HEAD --name-only ./environments/production | xargs -I{} dirname {} | awk '!a[$0]++{print}')
