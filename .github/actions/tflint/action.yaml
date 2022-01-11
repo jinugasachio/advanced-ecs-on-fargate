@@ -1,0 +1,15 @@
+name: Run tflint
+description: Run tflint
+
+runs:
+  using: composite
+  steps:
+    - name: Run tflint init
+      run: tflint --init --config $GITHUB_WORKSPACE/.tflint.hcl
+      shell: bash
+
+    - name: Run tflint
+      run: |
+        TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
+        echo $TF_DIRS | xargs -r -n 1 bash -c 'cd ${0} && tflint --config ${GITHUB_WORKSPACE}/.tflint.hcl --format compact'
+      shell: bash
