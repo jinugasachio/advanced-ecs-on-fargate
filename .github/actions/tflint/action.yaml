@@ -5,11 +5,11 @@ runs:
   using: composite
   steps:
     - name: Run tflint init
-      run: ./scripts/github_action/tflint_init.sh
+      run: tflint --init --config $GITHUB_WORKSPACE/.tflint.hcl
       shell: bash
 
     - name: Run tflint
       run: |
         TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
-        ./scripts/github_action/tflint.sh $TF_DIRS
+        echo $TF_DIRS | xargs -r -n 1 bash -c 'cd ${0} && tflint --config ${GITHUB_WORKSPACE}/.tflint.hcl --format compact'
       shell: bash
