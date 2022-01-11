@@ -10,7 +10,6 @@ runs:
 
     - name: Setup terraform
       uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
-      shell: bash
       with:
         terraform_version: ${{ env.TF_VERSION }}
 
@@ -30,7 +29,6 @@ runs:
 
     - uses: terraform-linters/setup-tflint@v1
       name: Setup TFLint
-      shell: bash
       with:
         tflint_version: v0.34.1 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
 
