@@ -23,25 +23,11 @@ jobs:
         with:
           fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags. Default: 1
 
-      - name: Detect terraform version
-        run: printf "TF_VERSION=%s" $(cat .terraform-version) >> $GITHUB_ENV
-
-      - name: Detect terragrunt version
-        run: printf "TG_VERSION=%s" $(cat .terragrunt-version) >> $GITHUB_ENV
-
-      - name: Setup terraform
-        uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
+      - name: Setup dependencies
+        uses: ./.github/actions/setup
 
       - name: Run terraform fmt
         run: ./scripts/github_action/terraform_fmt.sh
-
-      - name: Install tfcmt
-        run: ./scripts/github_action/install_tfcmt.sh
-
-      - name: Install terragrunt
-        run: ./scripts/github_action/install_terragrunt.sh
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1 # https://github.com/aws-actions/configure-aws-credentials
@@ -53,18 +39,8 @@ jobs:
       - name: Run terragrunt validate
         run: ./scripts/github_action/terragrunt_validate.sh
 
-      - uses: terraform-linters/setup-tflint@v1
-        name: Setup TFLint
-        with:
-          tflint_version: v0.34.1 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
-
-      - name: Run tflint init
-        run: ./scripts/github_action/tflint_init.sh
-
       - name: Run tflint
-        run: |
-          TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
-          ./scripts/github_action/tflint.sh $TF_DIRS
+        uses: ./.github/actions/tflint
 
       - name: Run terragrunt apply
         run: |
