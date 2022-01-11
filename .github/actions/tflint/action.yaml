@@ -6,8 +6,10 @@ runs:
   steps:
     - name: Run tflint init
       run: ./scripts/github_action/tflint_init.sh
+      shell: bash
 
     - name: Run tflint
       run: |
         TF_DIRS=$(./scripts/github_action/detect_terraform_dirs.sh)
         ./scripts/github_action/tflint.sh $TF_DIRS
+      shell: bash
