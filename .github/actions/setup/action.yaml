@@ -1,0 +1,31 @@
+name: Setup
+description: Setup dependencies for CI
+
+runs:
+  using: composite
+  steps:
+    - name: Detect terraform version
+      run: printf "TF_VERSION=%s" $(cat ./.terraform-version) >> $GITHUB_ENV
+
+    - name: Setup terraform
+      uses: hashicorp/setup-terraform@v1 # https://github.com/hashicorp/setup-terraform
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Detect terragrunt version
+      run: printf "TG_VERSION=%s" $(cat ./.terragrunt-version) >> $GITHUB_ENV
+
+    - name: Install terragrunt
+      run: ./scripts/github_action/install_terragrunt.sh
+
+    - name: Install tfcmt
+      run: ./scripts/github_action/install_tfcmt.sh
+      env:
+        TFCMT_VERSION: 3.0.1
+
+    - uses: terraform-linters/setup-tflint@v1
+      name: Setup TFLint
+      with:
+        tflint_version: v0.34.1 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
+
+
