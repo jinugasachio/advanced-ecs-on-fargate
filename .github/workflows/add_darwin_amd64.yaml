@@ -65,7 +65,7 @@ jobs:
         working-directory: ./environments
 
       - name: Commit terraform.lock.hcl files
-        uses: EndBug/add-and-commit@v8
+        uses: EndBug/add-and-commit@v9
         with:
           add: '.'
           message: 'Add platform darwin_amd64 to all terraform.lock.hcl'
