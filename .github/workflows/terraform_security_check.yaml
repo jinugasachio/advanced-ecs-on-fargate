@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run tfsec
         uses: reviewdog/action-tfsec@70985cf8373897ab378070c3b609cd8ba7a066c0
