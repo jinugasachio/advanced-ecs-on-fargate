@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run tfsec
-        uses: reviewdog/action-tfsec@70985cf8373897ab378070c3b609cd8ba7a066c0
+        uses: reviewdog/action-tfsec@52da76d312aea2a29f283b788534cd200653b38c
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           working_directory: .
