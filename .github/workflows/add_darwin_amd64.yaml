@@ -41,7 +41,7 @@ jobs:
         run: ./scripts/github_action/install_terragrunt.sh
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.ARN_TO_ASSUME_ROLE }}
           role-session-name: GitHubActions
