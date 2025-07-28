@@ -9,7 +9,7 @@ runs:
       shell: bash
 
     - name: Setup terraform
-      uses: hashicorp/setup-terraform@v2 # https://github.com/hashicorp/setup-terraform
+      uses: hashicorp/setup-terraform@v3 # https://github.com/hashicorp/setup-terraform
       with:
         terraform_version: ${{ env.TF_VERSION }}
 
